@@ -56,6 +56,7 @@ export default class Character extends cc.Component {
         this.csret = this.createShape();
         this.schedule(() => {
             this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
+            //对于这里的 this.csret.pointY由于this指针指向同一个类即character类的同一个实例，所以是同一个值，一个改变其余的也会随之改变
             if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)) {
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
             }
