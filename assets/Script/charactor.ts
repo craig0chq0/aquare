@@ -14,7 +14,11 @@ export default class Character extends cc.Component {
     background: cell[][] = []
     shape: cell[][] = []
 
-
+    private csret: {
+        pointX: number,
+        pointY: number,
+        shape: number[][]
+    } = null
 
     init() {
         let cellWidth = this.bg.width / bgWidth;
@@ -49,17 +53,19 @@ export default class Character extends cc.Component {
 
     onLoad() {
         this.init();
-        let { pointX, pointY, shape } = this.createShape();
-        // this.schedule(() => {
-        //     this.clear(pointX, pointY, shape);
-        //     if (!this.check(pointX, pointY - 1, shape)) {
-        //         this.draw(pointX, pointY, shape);
-        //     }
-        //     else {
-        //         pointY--;
-        //         this.draw(pointX, pointY, shape);
-        //     }
-        // }, 1, cc.macro.REPEAT_FOREVER, 1);
+        this.csret = this.createShape();
+        this.schedule(() => {
+            this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
+            if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)) {
+                this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+            }
+            else {
+                this.csret.pointY--;
+                this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+            }
+
+            this.changeShape({ keyCode: 38 });
+        }, 2, cc.macro.REPEAT_FOREVER, 2);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.changeShape, this);
     }
 
@@ -90,23 +96,24 @@ export default class Character extends cc.Component {
         }
         return true;
     }
-    createShape() {
 
+    // 随机生成一个图形，并返回他的参数
+    createShape() {
         let pointX: number = 2;
         let pointY: number = 7;
         let shape: number[][] = shapeList[Math.random() * shapeList.length | 0].slice();
         this.draw(pointX, pointY, shape);
-        return { pointX, pointY, shape }
+        return { pointX, pointY, shape };
     }
-   csret=this.createShape()
-   
+
     changeShape(systemEvent) {
-        // let { pointX, pointY, shape } = this.createShape();
         switch (systemEvent.keyCode) {
             case cc.KEY.up:
-                this.clear(this.csret.pointX, this.csret.pointY,this.csret.shape);
+                this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 let newshape = this.opearteShape(this.csret.shape);
+                this.csret.shape = newshape;
                 this.draw(this.csret.pointX, this.csret.pointY, newshape);
+
                 break;
             // case cc.KEY.left:
             //     this.clear(pointX, pointY, shape);
@@ -119,6 +126,7 @@ export default class Character extends cc.Component {
 
         }
     }
+
     onDestroy() {
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.changeShape, this);
     }
