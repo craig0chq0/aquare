@@ -1,4 +1,4 @@
-import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing, shizixing, tianzixing } from "./cfg"
+import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing, shizixing, tianzixing, state } from "./cfg"
 
 import cell from "./cell"
 
@@ -14,6 +14,8 @@ export default class Character extends cc.Component {
     type: character = null
     background: cell[][] = []
     shape: cell[][] = []
+    staylist: number[][] = []
+    stayshape: number[][] = []
     //声明一个对象接口
     private csret: {
         pointX: number,
@@ -60,6 +62,7 @@ export default class Character extends cc.Component {
             //对于这里的 this.csret.pointY由于this指针指向同一个类即character类的同一个实例，所以是同一个值，一个改变其余的也会随之改变
             if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)) {
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                this.resetCharacter();
             }
             else {
                 this.csret.pointY--;
@@ -94,11 +97,12 @@ export default class Character extends cc.Component {
     check(pointX: number, pointY: number, shape: number[][]) {
         for (let i = 0; i < shape.length; ++i) {
             if (typeof this.background[pointX + shape[i][0]][pointY + shape[i][1]] === "undefined" ||
-                this.background[pointX + shape[i][0]][pointY + shape[i][1]].act === act.open 
+                this.background[pointX + shape[i][0]][pointY + shape[i][1]].act === act.open
                 //|| pointX - 1 + shape[i][0] < 0 || pointX - 1 < 0 || pointX + 1 + shape[i][0] > bgWidth - 1 
                 // || pointX + 1 > bgWidth - 1
             ) {
                 // console.log(pointX + shape[i][0], pointY + shape[i][1]);
+
                 return false;
 
             }
@@ -130,30 +134,37 @@ export default class Character extends cc.Component {
                     let newshape = this.opearteShape(this.csret.shape);
                     this.csret.shape = newshape;
                     // for (let i = 0; i < this.csret.shape.length; ++i) {
-                        //     if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0
-                        //         ||this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1
-                        //         ||!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
-                        //     ){
-                        //         this.draw(this.csret.pointX, this.csret.pointY, oldShape);
+                    //         if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0
+                    //             ||this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1
+                    //             ||!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
+                    //         ){
+                    //             // this.draw(this.csret.pointX, this.csret.pointY, oldShape);
+                    //             return
+                    //         }
+                    //     }
+                    //     this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                    if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
+                        || !this.check(this.csret.pointX + 1, this.csret.pointY, this.csret.shape)
+                        || !this.check(this.csret.pointX, this.csret.pointY, this.csret.shape)) {
+                        // for (let i=0;i<this.csret.shape.length;i++){
+                        //     if((this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0)
+                        //     &&(this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1)){
+                        //         return;
                         //     }
                         // }
-                        if (this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
-                            // || this.check(this.csret.pointX + 1, this.csret.pointY, this.csret.shape)
-                            // || this.check(this.csret.pointX - 1, this.csret.pointY, this.csret.shape)
-                        ) {
-                            this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
-                        }
-                        else {
-                            this.draw(this.csret.pointX, this.csret.pointY, oldShape);
-                            this.csret.shape = oldShape;
-                        }
-                    
+                        this.draw(this.csret.pointX, this.csret.pointY, oldShape);
+                        this.csret.shape = oldShape;
+                    }
+                    else {
+                        this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                        // this.csret.shape = oldShape;
+                    }
                 }
                 else return;
                 break;
             case cc.KEY.left:
                 for (let i = 0; i < this.csret.shape.length; i++) {
-                    if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0) {
+                    if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0) {
                         return false
                     }
                 }
@@ -162,7 +173,7 @@ export default class Character extends cc.Component {
                 break;
             case cc.KEY.right:
                 for (let i = 0; i < this.csret.shape.length; i++) {
-                    if (this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1) {
+                    if (this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1) {
                         console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
                         return
                     }
@@ -192,5 +203,41 @@ export default class Character extends cc.Component {
         }
         return true;
     }
+    resetCharacter() {
+        this.stayshape = this.csret.shape
+        this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
+        this.draw(this.csret.pointX, this.csret.pointY, this.stayshape);
+        this.csret = this.createShape();
+        this.remove();
 
+
+        // this.schedule(() => {
+        //     this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape)
+        //     if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)) {
+        //         this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+        //     }
+        //     else {
+        //         this.csret.pointY--;
+        //         this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+        //     }
+        // }, 1, cc.macro.REPEAT_FOREVER, 1);
+    }
+    clearRow(num: number) {
+        for (let i = 0; i < 5; ++i) {
+            this.background[i][num].show(act.close)
+        }
+    }
+    remove() {
+        this.staylist = this.staylist.concat(this.stayshape);
+        console.log( this.staylist)
+        for (let i = 0; i < this.staylist.length; ++i) {
+            if (this.staylist[i][1] = 1) {
+                let row1: number[][] = [];
+                row1.push(this.staylist[i]);
+                if (row1.length === 5) {
+                    this.clearRow(1);
+                }
+            }
+        }
+    }
 }

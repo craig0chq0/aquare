@@ -21,3 +21,7 @@ export const gouxing = [[-1, 0], [0, 0], [1, 0], [1, -1]];
 export const tianzixing = [[0, 1], [1, 1], [1, 0], [0, 0]];
 export const tuzixing = [[-1, 0], [0, 0], [0, 1], [1, 0]];
 export const shapeList = [zhexing, shizixing, shuxing, gouxing, tianzixing, tuzixing];
+export enum state {
+    fall,
+    stop
+}
