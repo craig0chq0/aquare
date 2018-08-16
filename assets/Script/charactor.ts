@@ -94,10 +94,17 @@ export default class Character extends cc.Component {
     check(pointX: number, pointY: number, shape: number[][]) {
         for (let i = 0; i < shape.length; ++i) {
             if (typeof this.background[pointX + shape[i][0]][pointY + shape[i][1]] === "undefined" ||
-                this.background[pointX + shape[i][0]][pointY + shape[i][1]].act === act.open) {
+                this.background[pointX + shape[i][0]][pointY + shape[i][1]].act === act.open 
+                //|| pointX - 1 + shape[i][0] < 0 || pointX - 1 < 0 || pointX + 1 + shape[i][0] > bgWidth - 1 
+                // || pointX + 1 > bgWidth - 1
+            ) {
+                // console.log(pointX + shape[i][0], pointY + shape[i][1]);
                 return false;
+
             }
+            // console.log(typeof this.background[pointX + shape[i][0]][pointY + shape[i][1]]);
         }
+
         return true;
     }
 
@@ -119,18 +126,48 @@ export default class Character extends cc.Component {
             case cc.KEY.up:
                 if (!this.checkArray(this.csret.shape, tianzixing)) {
                     this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                    let oldShape = this.csret.shape;
                     let newshape = this.opearteShape(this.csret.shape);
                     this.csret.shape = newshape;
-                    this.draw(this.csret.pointX, this.csret.pointY, newshape);
-                    //     console.log(!this.checkArray(this.csret.shape,tianzixing))
+                    // for (let i = 0; i < this.csret.shape.length; ++i) {
+                        //     if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0
+                        //         ||this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1
+                        //         ||!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
+                        //     ){
+                        //         this.draw(this.csret.pointX, this.csret.pointY, oldShape);
+                        //     }
+                        // }
+                        if (this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
+                            // || this.check(this.csret.pointX + 1, this.csret.pointY, this.csret.shape)
+                            // || this.check(this.csret.pointX - 1, this.csret.pointY, this.csret.shape)
+                        ) {
+                            this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                        }
+                        else {
+                            this.draw(this.csret.pointX, this.csret.pointY, oldShape);
+                            this.csret.shape = oldShape;
+                        }
+                    
                 }
                 else return;
                 break;
             case cc.KEY.left:
+                for (let i = 0; i < this.csret.shape.length; i++) {
+                    if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0 || this.csret.pointX - 1 < 0) {
+                        return false
+                    }
+                }
                 this.clear(this.csret.pointX--, this.csret.pointY, this.csret.shape);
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 break;
             case cc.KEY.right:
+                for (let i = 0; i < this.csret.shape.length; i++) {
+                    if (this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1 || this.csret.pointX + 1 > bgWidth - 1) {
+                        console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
+                        return
+                    }
+                    console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
+                }
                 this.clear(this.csret.pointX++, this.csret.pointY, this.csret.shape);
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 break;
@@ -155,4 +192,5 @@ export default class Character extends cc.Component {
         }
         return true;
     }
+
 }
