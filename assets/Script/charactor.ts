@@ -1,4 +1,4 @@
-import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing, shizixing, tianzixing, state } from "./cfg"
+import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing,  tianzixing, state } from "./cfg"
 
 import cell from "./cell"
 
@@ -16,6 +16,8 @@ export default class Character extends cc.Component {
     shape: cell[][] = []
     staylist: number[][] = []
     stayshape: number[][] = []
+    stayX:number=0
+    stayY:number=0
     //声明一个对象接口
     private csret: {
         pointX: number,
@@ -205,6 +207,8 @@ export default class Character extends cc.Component {
     }
     resetCharacter() {
         this.stayshape = this.csret.shape
+        this.stayX=this.csret.pointX
+        this.stayY=this.csret.pointY
         this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
         this.draw(this.csret.pointX, this.csret.pointY, this.stayshape);
         this.csret = this.createShape();
@@ -227,17 +231,23 @@ export default class Character extends cc.Component {
             this.background[i][num].show(act.close)
         }
     }
+    row1: number[]= [];
     remove() {
-        this.staylist = this.staylist.concat(this.stayshape);
-        console.log( this.staylist)
+        console.log(this.stayshape);
+        this.staylist=this.stayshape;
+        console.log(this.staylist);
         for (let i = 0; i < this.staylist.length; ++i) {
-            if (this.staylist[i][1] = 1) {
-                let row1: number[][] = [];
-                row1.push(this.staylist[i]);
-                if (row1.length === 5) {
-                    this.clearRow(1);
+            //元素在背景中的位置
+            let a=this.stayX+this.staylist[i][0];
+            let b=this.stayY+this.staylist[i][1];
+            this.background[a][b]
+            if (this.background[a][b].y===0) {
+                
+                this.row1.push(i);
                 }
             }
+            if (this.row1.length === 5) {
+                this.clearRow(0);
         }
     }
 }
