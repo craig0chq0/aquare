@@ -1,4 +1,4 @@
-import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing,  tianzixing, state } from "./cfg"
+import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing, tianzixing, state } from "./cfg"
 
 import cell from "./cell"
 
@@ -16,8 +16,18 @@ export default class Character extends cc.Component {
     shape: cell[][] = []
     staylist: number[][] = []
     stayshape: number[][] = []
-    stayX:number=0
-    stayY:number=0
+    stayX: number = 0
+    stayY: number = 0
+    blanklist: cell[] = []
+    // row0: number[] = [];
+    // row1: number[] = [];
+    // row2: number[] = [];
+    // row3: number[] = [];
+    // row4: number[] = [];
+    // row5: number[] = [];
+    // row6: number[] = [];
+    // row7: number[] = [];
+    // row8: number[] = [];
     //声明一个对象接口
     private csret: {
         pointX: number,
@@ -62,7 +72,9 @@ export default class Character extends cc.Component {
         this.schedule(() => {
             this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
             //对于这里的 this.csret.pointY由于this指针指向同一个类即character类的同一个实例，所以是同一个值，一个改变其余的也会随之改变
-            if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)) {
+            if (!this.check(this.csret.pointX, this.csret.pointY - 1, this.csret.shape)
+                // || !this.check(this.csret.pointX, this.csret.pointY, this.csret.shape)
+            ) {
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 this.resetCharacter();
             }
@@ -167,21 +179,33 @@ export default class Character extends cc.Component {
             case cc.KEY.left:
                 for (let i = 0; i < this.csret.shape.length; i++) {
                     if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0) {
-                        return false
+                        return;
                     }
                 }
                 this.clear(this.csret.pointX--, this.csret.pointY, this.csret.shape);
+                if (!this.check(this.csret.pointX, this.csret.pointY, this.csret.shape)) {
+                    this.draw(this.csret.pointX + 1, this.csret.pointY, this.csret.shape);
+                    this.csret.pointX++;
+                    return;
+
+                }
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 break;
             case cc.KEY.right:
                 for (let i = 0; i < this.csret.shape.length; i++) {
                     if (this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1) {
-                        console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
+                        // console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
                         return
                     }
-                    console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
+                    // console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
                 }
                 this.clear(this.csret.pointX++, this.csret.pointY, this.csret.shape);
+                // this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                if (!this.check(this.csret.pointX, this.csret.pointY, this.csret.shape)) {
+                    this.draw(this.csret.pointX - 1, this.csret.pointY, this.csret.shape);
+                    this.csret.pointX--;
+                    return;
+                }
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 break;
 
@@ -207,8 +231,8 @@ export default class Character extends cc.Component {
     }
     resetCharacter() {
         this.stayshape = this.csret.shape
-        this.stayX=this.csret.pointX
-        this.stayY=this.csret.pointY
+        this.stayX = this.csret.pointX
+        this.stayY = this.csret.pointY
         this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
         this.draw(this.csret.pointX, this.csret.pointY, this.stayshape);
         this.csret = this.createShape();
@@ -231,23 +255,69 @@ export default class Character extends cc.Component {
             this.background[i][num].show(act.close)
         }
     }
-    row1: number[]= [];
     remove() {
         console.log(this.stayshape);
-        this.staylist=this.stayshape;
+        this.staylist = this.stayshape;
         console.log(this.staylist);
-        for (let i = 0; i < this.staylist.length; ++i) {
-            //元素在背景中的位置
-            let a=this.stayX+this.staylist[i][0];
-            let b=this.stayY+this.staylist[i][1];
-            this.background[a][b]
-            if (this.background[a][b].y===0) {
-                
-                this.row1.push(i);
+        for (let j = 0; j < bgHeight; ++j) {
+            for (let i = 0; i < bgWidth; ++i) {
+                if (this.background[i][j].act === act.open) {
+                    this.blanklist.push(this.background[i][j])
                 }
+                else {
+                    this.blanklist.splice(0);
+                }
+                if (this.blanklist.length === 5) {
+                    this.clearRow(j);
+                    this.blanklist.splice(0);
+                }
+
             }
-            if (this.row1.length === 5) {
-                this.clearRow(0);
         }
+
+
+        // //元素在背景中的位置
+        // let a = this.stayX + this.staylist[i][0];
+        // let b = this.stayY + this.staylist[i][1];
+        // this.background[a][b]
+
     }
+    //         switch (this.background[a][b].y) {
+    //             case 0:
+    //                 this.row0.push(i);
+    //                 break;
+    //             case 1:
+    //                 this.row1.push(i);
+    //                 break;
+    //             case 2:
+    //                 this.row2.push(i);
+    //                 break;
+    //             case 3:
+    //                 this.row3.push(i);
+    //                 break;
+    //             case 4:
+    //                 this.row4.push(i);
+    //                 break;
+    //             case 5:
+    //                 this.row5.push(i);
+    //                 break;
+    //             case 6:
+    //                 this.row6.push(i);
+    //                 break;
+    //             case 7:
+    //                 this.row7.push(i);
+    //                 break;
+    //             case 8:
+    //                 this.row8.push(i);
+    //                 break;
+    //         }
+    //     }
+    //     if (this.row0.length === 5) {
+    //         this.clearRow(0);
+    //         this.row0.splice(0);
+    //     }
+    //     else if (this.row1.length === 5) {
+    //         this.clearRow(1);
+    //     }
+    // }
 }
