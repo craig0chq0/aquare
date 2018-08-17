@@ -18,8 +18,8 @@ export default class Character extends cc.Component {
     stayshape: number[][] = []
     stayX: number = 0
     stayY: number = 0
-    blanklist: cell[] = []
-    ret :number=0
+    // blanklist: cell[] = []
+    // ret: number = 0
     // row0: number[] = [];
     // row1: number[] = [];
     // row2: number[] = [];
@@ -70,6 +70,7 @@ export default class Character extends cc.Component {
     onLoad() {
         this.init();
         this.csret = this.createShape();
+        // this.ret = this.remove();
         this.schedule(() => {
             this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
             //对于这里的 this.csret.pointY由于this指针指向同一个类即character类的同一个实例，所以是同一个值，一个改变其余的也会随之改变
@@ -245,7 +246,7 @@ export default class Character extends cc.Component {
         this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
         this.draw(this.csret.pointX, this.csret.pointY, this.stayshape);
         this.remove();
-        this.fallDown();
+        // this.fallDown();
         this.csret = this.createShape();
 
 
@@ -266,6 +267,7 @@ export default class Character extends cc.Component {
             this.background[i][num].show(act.close)
         }
     }
+    makeSure() { }
     remove() {
         // this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
         // this.fallDown();
@@ -279,33 +281,50 @@ export default class Character extends cc.Component {
                     blanklist.push(this.background[i][j]);
                 }
             }
-            if (blanklist.length === 5) {
+            if (blanklist.length === bgWidth) {
                 for (let x = 0; x < blanklist.length; ++x) {
-                    blanklist[x].show(act.close);
+                    blanklist[x].show(act.close);   
                 }
+                this.clearfall(j);
+                j--;
+
             }
-            return j
-        }    
+        }
+
         // this.fallDown();
         // //元素在背景中的位置
         // let a = this.stayX + this.staylist[i][0];
         // let b = this.stayY + this.staylist[i][1];
         // this.background[a][b]
     }
-    
-    //对于多少行以上的方块整体下落
-    fallDown() {
-        this.ret=this.remove();
-        for (let j = 0; j < bgHeight; ++j) {
+    clearfall(row: number) {
+        for (let j = row; j < bgHeight; ++j) {
             for (let i = 0; i < bgWidth; ++i) {
-                if (j >this.ret) {
-                    if (this.background[i][j].act === act.open && this.background[i][j - 1].act === act.close) {
-                        this.background[i][j].show(act.close);
-                        this.background[i][j - 1].show(act.open);
-                    }
+                if (j === bgHeight - 1) {
+                    this.background[i][j].show(act.close);
+                }
+                else {
+                    this.background[i][j].show(this.background[i][j + 1].act);
                 }
             }
         }
+    }
+
+    //对于多少行以上的方块整体下落
+    // fallDown() {
+    //     for (let j = 0; j < bgHeight; ++j) {
+    //         for (let i = 0; i < bgWidth; ++i) {
+    //             if (j > this.ret) {
+    //                 if (this.background[i][j].act === act.open && this.background[i][j - 1].act === act.close) {
+    //                     this.background[i][j].show(act.close);
+    //                     this.background[i][j - 1].show(act.open);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    isStop() {
+
     }
     //     for (let j = 0; j < bgHeight; ++j) {
     //         for (let i = 0; i< bgWidth; ++i) {

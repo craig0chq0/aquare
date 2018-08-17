@@ -11,8 +11,8 @@ export enum act {
     open,
     close
 }
-export const bgWidth: number = 5
-export const bgHeight: number = 9
+export const bgWidth: number = 7
+export const bgHeight: number = 10
 
 export const zhexing = [[-1, 1], [0, 1], [0, 0], [1, 0]];
 // export const shizixing = [[0, 0], [1, 0], [0, -1], [-1, 0], [0, 1]];
