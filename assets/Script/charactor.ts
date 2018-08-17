@@ -6,7 +6,8 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Character extends cc.Component {
-
+    @property(cc.Label)
+    private SCORE: cc.Label = null
     @property(cc.Node)
     private bg: cc.Node = null
     @property(cc.Prefab)
@@ -138,6 +139,14 @@ export default class Character extends cc.Component {
         let pointX: number = 2;
         let pointY: number = 7;
         let shape: number[][] = shapeList[Math.random() * shapeList.length | 0].slice();
+        if (!this.check(pointX, pointY, shape)) {
+            alert("gameover");
+            for (let j = 0; j < bgHeight; ++j) {
+                for (let i = 0; i < bgWidth; ++i) {
+                    this.background[i][j].show(act.close);
+                }
+            }
+        }
         this.draw(pointX, pointY, shape);
         return {
             pointX: pointX,
@@ -221,6 +230,9 @@ export default class Character extends cc.Component {
 
         }
     }
+    addScore(){
+
+    }
 
     onDestroy() {
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.changeShape, this);
@@ -283,7 +295,7 @@ export default class Character extends cc.Component {
             }
             if (blanklist.length === bgWidth) {
                 for (let x = 0; x < blanklist.length; ++x) {
-                    blanklist[x].show(act.close);   
+                    blanklist[x].show(act.close);
                 }
                 this.clearfall(j);
                 j--;
