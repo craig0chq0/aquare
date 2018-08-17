@@ -19,6 +19,7 @@ export default class Character extends cc.Component {
     stayshape: number[][] = []
     stayX: number = 0
     stayY: number = 0
+    score:number=1
     // blanklist: cell[] = []
     // ret: number = 0
     // row0: number[] = [];
@@ -230,7 +231,8 @@ export default class Character extends cc.Component {
 
         }
     }
-    addScore(){
+    addScore(score:number){
+       this.SCORE.string=`${score}`;
 
     }
 
@@ -298,6 +300,8 @@ export default class Character extends cc.Component {
                     blanklist[x].show(act.close);
                 }
                 this.clearfall(j);
+                this.addScore(this.score);
+                this.score++;
                 j--;
 
             }
