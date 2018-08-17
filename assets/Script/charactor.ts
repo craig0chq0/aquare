@@ -19,6 +19,7 @@ export default class Character extends cc.Component {
     stayX: number = 0
     stayY: number = 0
     blanklist: cell[] = []
+    ret :number=0
     // row0: number[] = [];
     // row1: number[] = [];
     // row2: number[] = [];
@@ -76,6 +77,8 @@ export default class Character extends cc.Component {
                 // || !this.check(this.csret.pointX, this.csret.pointY, this.csret.shape)
             ) {
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
+                // this.remove();
+                // this.fallDown();
                 this.resetCharacter();
             }
             else {
@@ -106,6 +109,12 @@ export default class Character extends cc.Component {
             this.background[pointX + shape[i][0]][pointY + shape[i][1]].show(act.close);
         }
     }
+    clean(x: number, y: number) {
+        this.background[x][y].show(act.close)
+    }
+    show(x: number, y: number) {
+        this.background[x][y].show(act.open)
+    }
     //判断进行操作的格子是否存在和是否时空白
     //当格子不存在或者已经有图形的时候显示false
     check(pointX: number, pointY: number, shape: number[][]) {
@@ -116,13 +125,10 @@ export default class Character extends cc.Component {
                 // || pointX + 1 > bgWidth - 1
             ) {
                 // console.log(pointX + shape[i][0], pointY + shape[i][1]);
-
                 return false;
-
             }
             // console.log(typeof this.background[pointX + shape[i][0]][pointY + shape[i][1]]);
         }
-
         return true;
     }
 
@@ -141,7 +147,8 @@ export default class Character extends cc.Component {
     //更改图形的状态（位置，旋转）
     changeShape(systemEvent) {
         switch (systemEvent.keyCode) {
-            case cc.KEY.up:
+            //cc.KEY.up||
+            case cc.KEY.w:
                 if (!this.checkArray(this.csret.shape, tianzixing)) {
                     this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
                     let oldShape = this.csret.shape;
@@ -176,7 +183,8 @@ export default class Character extends cc.Component {
                 }
                 else return;
                 break;
-            case cc.KEY.left:
+            //cc.KEY.left||
+            case cc.KEY.a:
                 for (let i = 0; i < this.csret.shape.length; i++) {
                     if (this.csret.pointX - 1 + this.csret.shape[i][0] < 0) {
                         return;
@@ -191,7 +199,8 @@ export default class Character extends cc.Component {
                 }
                 this.draw(this.csret.pointX, this.csret.pointY, this.csret.shape);
                 break;
-            case cc.KEY.right:
+            //cc.KEY.right||
+            case cc.KEY.d:
                 for (let i = 0; i < this.csret.shape.length; i++) {
                     if (this.csret.pointX + 1 + this.csret.shape[i][0] > bgWidth - 1) {
                         // console.log(this.csret.pointX + 1 + this.csret.shape[i][0]);
@@ -235,8 +244,10 @@ export default class Character extends cc.Component {
         this.stayY = this.csret.pointY
         this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
         this.draw(this.csret.pointX, this.csret.pointY, this.stayshape);
-        this.csret = this.createShape();
         this.remove();
+        this.fallDown();
+        this.csret = this.createShape();
+
 
 
         // this.schedule(() => {
@@ -256,32 +267,61 @@ export default class Character extends cc.Component {
         }
     }
     remove() {
-        console.log(this.stayshape);
-        this.staylist = this.stayshape;
-        console.log(this.staylist);
+        // this.clear(this.csret.pointX, this.csret.pointY, this.csret.shape);
+        // this.fallDown();
+        // console.log(this.stayshape);
+        // // this.staylist = this.staylist.concat(this.stayshape);
+        // console.log(this.staylist);
         for (let j = 0; j < bgHeight; ++j) {
+            let blanklist: cell[] = [];
             for (let i = 0; i < bgWidth; ++i) {
                 if (this.background[i][j].act === act.open) {
-                    this.blanklist.push(this.background[i][j])
+                    blanklist.push(this.background[i][j]);
                 }
-                else {
-                    this.blanklist.splice(0);
-                }
-                if (this.blanklist.length === 5) {
-                    this.clearRow(j);
-                    this.blanklist.splice(0);
-                }
-
             }
-        }
-
-
+            if (blanklist.length === 5) {
+                for (let x = 0; x < blanklist.length; ++x) {
+                    blanklist[x].show(act.close);
+                }
+            }
+            return j
+        }    
+        // this.fallDown();
         // //元素在背景中的位置
         // let a = this.stayX + this.staylist[i][0];
         // let b = this.stayY + this.staylist[i][1];
         // this.background[a][b]
-
     }
+    
+    //对于多少行以上的方块整体下落
+    fallDown() {
+        this.ret=this.remove();
+        for (let j = 0; j < bgHeight; ++j) {
+            for (let i = 0; i < bgWidth; ++i) {
+                if (j >this.ret) {
+                    if (this.background[i][j].act === act.open && this.background[i][j - 1].act === act.close) {
+                        this.background[i][j].show(act.close);
+                        this.background[i][j - 1].show(act.open);
+                    }
+                }
+            }
+        }
+    }
+    //     for (let j = 0; j < bgHeight; ++j) {
+    //         for (let i = 0; i< bgWidth; ++i) {
+    //             if (this.background[i][j].act === act.open) {
+    //                 this.clean(i, j);
+    //                 if (j > 0) {
+    //                     this.show(i, j - 1);
+    //                 }
+    //                 else {
+    //                     this.show(i, j);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     // this.remove();
+    // }
     //         switch (this.background[a][b].y) {
     //             case 0:
     //                 this.row0.push(i);
