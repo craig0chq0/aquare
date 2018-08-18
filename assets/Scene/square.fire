@@ -144,7 +144,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "score",
+    "_name": "SCORE",
     "_objFlags": 0,
     "_parent": {
       "__id__": 6
@@ -158,13 +158,13 @@
       }
     ],
     "_prefab": null,
-    "_id": "d0ETlDittKiK7BSUFNbMzX",
+    "_id": "85muWyLQFEg4w2OeNzk+pA",
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 53,
-      "g": 7,
-      "b": 7,
+      "r": 24,
+      "g": 3,
+      "b": 3,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,
@@ -184,8 +184,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 81,
-      "y": 1105
+      "x": 66,
+      "y": 1234
     },
     "_skewX": 0,
     "_skewY": 0,

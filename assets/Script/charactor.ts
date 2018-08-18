@@ -1,4 +1,4 @@
-import { character, bgWidth, bgHeight, act, zhexing, shapeList, tuzixing, tianzixing, state } from "./cfg"
+import { character, bgWidth, bgHeight, act,  shapeList, tianzixing  state } from "./cfg"
 
 import cell from "./cell"
 
@@ -90,7 +90,7 @@ export default class Character extends cc.Component {
             }
 
             // this.changeShape({ keyCode: 38 });
-        }, 1, cc.macro.REPEAT_FOREVER, 1);
+        }, 0.5, cc.macro.REPEAT_FOREVER, 0.5);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.changeShape, this);
     }
 
@@ -141,7 +141,10 @@ export default class Character extends cc.Component {
         let pointY: number = 7;
         let shape: number[][] = shapeList[Math.random() * shapeList.length | 0].slice();
         if (!this.check(pointX, pointY, shape)) {
+            this.score=1;
+            this.addScore(0);
             alert("gameover");
+            
             for (let j = 0; j < bgHeight; ++j) {
                 for (let i = 0; i < bgWidth; ++i) {
                     this.background[i][j].show(act.close);
@@ -262,6 +265,7 @@ export default class Character extends cc.Component {
         this.remove();
         // this.fallDown();
         this.csret = this.createShape();
+        
 
 
 
