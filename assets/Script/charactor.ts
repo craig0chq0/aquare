@@ -1,4 +1,4 @@
-import { character, bgWidth, bgHeight, act,  shapeList, tianzixing  state } from "./cfg"
+import { character, bgWidth, bgHeight, act,  shapeList, tianzixing } from "./cfg"
 
 import cell from "./cell"
 
